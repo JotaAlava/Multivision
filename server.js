@@ -1,11 +1,35 @@
-var express = require('express');
+var express = require('express'),
+    stylus = require('stylus'),
+    logger = require('morgan'), /* logger has been renamed to morgan */
+    bodyParser = require('body-parser');
 
 var env = process.env.NODE_ENV = process.env.NODE_ENV || 'development';
 
 var expressApplication = express();
 
+// Function used by Stylus
+function compile(str, path){
+    return stylus(str).set('filename', path);
+}
+
 expressApplication.set('views', __dirname + '/server/views');
 expressApplication.set('view engine', 'jade');
+// Additional Stylus Configuration
+expressApplication.use(stylus.middleware(
+    {
+        src: __dirname + '/public',
+        compile: compile
+    }
+));
+
+expressApplication.use(logger('dev'));
+
+// This tells express: If a requests comes for a file,
+// look into the public directory and then
+// go ahead and serve the file. This is static route handling.
+expressApplication.use(express.static(__dirname + '/public'));
+
+// End Of Additional Stylus Configuration
 
 //Create Route To Deliver Index Page
 expressApplication.get('*', function(req, res){
