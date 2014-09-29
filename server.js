@@ -1,7 +1,8 @@
 var express = require('express'),
     stylus = require('stylus'),
     logger = require('morgan'), /* logger has been renamed to morgan */
-    bodyParser = require('body-parser');
+    bodyParser = require('body-parser'),
+    mongoose = require('mongoose');
 
 var env = process.env.NODE_ENV = process.env.NODE_ENV || 'development';
 
@@ -23,11 +24,28 @@ expressApplication.use(stylus.middleware(
 ));
 
 expressApplication.use(logger('dev'));
+expressApplication.use(bodyParser());
 
 // This tells express: If a requests comes for a file,
 // look into the public directory and then
 // go ahead and serve the file. This is static route handling.
 expressApplication.use(express.static(__dirname + '/public'));
+
+mongoose.connect('mongodb://localhost/multivision');
+var db = mongoose.connection;
+// Listen for errors, and output them in console if they happen
+db.on('error', console.error.bind(console, 'connection error...'));
+db.once('open', function callback(){
+   console.log('multivision db opened');
+});
+
+var messageSchema = mongoose.Schema({message: String});
+var Message = mongoose.model('Message', messageSchema);
+var mongoMessage;
+
+Message.findOne().exec(function(err, messageDoc){
+    mongoMessage = messageDoc.message;
+});
 
 // End Of Additional Stylus Configuration
 
@@ -40,7 +58,7 @@ expressApplication.get('/partials/:partialPath', function(req, res){
 
 //Create Route To Deliver Index Page
 expressApplication.get('*', function(req, res){
-    res.render('index');
+    res.render('index', {mongoMessage: mongoMessage});
 });
 // will match all requests, done such that Angular routing service will
 // be reponsible for the routing. Otherwiese I would have to match these
