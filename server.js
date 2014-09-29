@@ -6,6 +6,13 @@ var express = require('express'),
 
 var env = process.env.NODE_ENV = process.env.NODE_ENV || 'development';
 
+if(env === 'development'){
+    mongoose.connect('mongodb://localhost/multivisiondb');
+}
+else{
+    mongoose.connect('mongodb://jota:multivision@ds041140.mongolab.com:41140/multivisiondb');
+}
+
 var expressApplication = express();
 
 // Function used by Stylus
@@ -31,8 +38,6 @@ expressApplication.use(bodyParser());
 // go ahead and serve the file. This is static route handling.
 expressApplication.use(express.static(__dirname + '/public'));
 
-//mongoose.connect('mongodb://localhost/multivisiondb');
-mongoose.connect('mongodb://jota:multivision@ds041140.mongolab.com:41140/multivisiondb');
 var db = mongoose.connection;
 // Listen for errors, and output them in console if they happen
 db.on('error', console.error.bind(console, 'connection error...'));
