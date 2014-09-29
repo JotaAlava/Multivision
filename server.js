@@ -31,12 +31,13 @@ expressApplication.use(bodyParser());
 // go ahead and serve the file. This is static route handling.
 expressApplication.use(express.static(__dirname + '/public'));
 
-mongoose.connect('mongodb://localhost/multivision');
+//mongoose.connect('mongodb://localhost/multivisiondb');
+mongoose.connect('mongodb://jota:multivision@ds041140.mongolab.com:41140/multivisiondb');
 var db = mongoose.connection;
 // Listen for errors, and output them in console if they happen
 db.on('error', console.error.bind(console, 'connection error...'));
 db.once('open', function callback(){
-   console.log('multivision db opened');
+   console.log('multivision db opened at: ');
 });
 
 var messageSchema = mongoose.Schema({message: String});
@@ -64,7 +65,7 @@ expressApplication.get('*', function(req, res){
 // be reponsible for the routing. Otherwiese I would have to match these
 // on both the server side and client side.
 
-var port = '8091';
+var port = process.env.PORT || 3030;
 expressApplication.listen(port);
 console.log('Listening on port ' + port + '...');
 
@@ -75,4 +76,8 @@ Will start a node server with the current file. However, when I make
 changes I will have to stop and restart the server. Unless I use nodemon.
 Nodemon Command:
 nodemon [fileName].js
+
+MongoLabs Credential:
+jota
+multivision
  */
