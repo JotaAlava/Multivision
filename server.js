@@ -31,6 +31,13 @@ expressApplication.use(express.static(__dirname + '/public'));
 
 // End Of Additional Stylus Configuration
 
+// This is very similar to the other route.
+// In this case when somenoe requests /partials/main, express
+// will serve the main.jade file inside the partials folder.
+expressApplication.get('/partials/:partialPath', function(req, res){
+    res.render('partials/' + req.params.partialPath);
+});
+
 //Create Route To Deliver Index Page
 expressApplication.get('*', function(req, res){
     res.render('index');
